@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import requests
+#import requests
 
 trv_lookup = {
 "00:1A:22:0C:27:A9" : "Front_door",
@@ -63,13 +63,13 @@ def process_post(path, data):
             mac = json_data["MAC"]
             print(mac)
             status = read_device(each) # XXX rename me
-                if status == False:
-                    return 404,{"result":False}
-                elif isinstance(status, dict):
-                    # If we got a dict back, then the read must have worked
-                    return 200, status
-                else:
-                    return 500, {"result":False}
+            if status == False:
+                return 404,{"result":False}
+            elif isinstance(status, dict):
+                # If we got a dict back, then the read must have worked
+                return 200, status
+            else:
+                return 500, {"result":False}
     elif path == "/set_device":
         return 202,""
     elif path == "/scan":
