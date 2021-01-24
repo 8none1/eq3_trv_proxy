@@ -62,7 +62,7 @@ def process_post(path, data):
         if "MAC" in json_data:
             mac = json_data["MAC"]
             print(mac)
-            status = read_device(each) # XXX rename me
+            status = read_device(mac) # XXX rename me from status
             if status == False:
                 return 404,{"result":False}
             elif isinstance(status, dict):
