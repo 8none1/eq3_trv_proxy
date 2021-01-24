@@ -24,8 +24,6 @@ class S(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
-                str(self.path), str(self.headers), post_data.decode('utf-8'))
         status,obj = process_post(self.path,post_data.decode('utf-8'))
         self._set_response(status)
         obj = json.dumps(obj)
@@ -34,14 +32,13 @@ class S(BaseHTTPRequestHandler):
 def process_post(path, data):
     try:
         json_data = json.loads(data)
-        print(json.dumps(json_data))
+        logging.info(json.dumps(json_data))
     except:
         logging.error("Failed to parse JSON")
         return 400,{"result":False}
     if path == "/read_device":
         if "MAC" in json_data:
             mac = json_data["MAC"]
-            print(mac)
             status = read_device(mac) # XXX rename me from status
             if status == False:
                 return 404,{"result":False}
@@ -70,6 +67,7 @@ def read_device(mac):
             "low_battery" : thermo.low_battery,
             "locked" : thermo.locked
         }
+        logging.info(json.dumps(obj))
         return obj
     except bluepy.btle.BTLEDisconnectError:
         logging.error("Failed to talk to device.")
@@ -80,7 +78,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    logging.info('Starting httpd...\n')
+    logging.info('Starting httpd.. on port '+str(port)+''.\n')
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
