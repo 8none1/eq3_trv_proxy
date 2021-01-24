@@ -1,0 +1,37 @@
+Listen for a POSTed file.  Can only be JSON.
+
+1. Read data, return results in JSON
+IN: {"MAC":["xxyyzz","xxyyaa",..]}
+
+OUT:
+{
+   "devices":
+   [
+       {
+           "MAC":"aabbccdd", "data":{
+           "locked":true,
+           "Temperature":27,
+           "foo","bar" },
+       }
+       {},
+       {}
+   ]
+}
+
+
+
+2. Set:
+    - Temperature
+    - Lock
+    - Boost
+    - 
+
+
+3. Scan
+
+IN: POST {"scan":true,"results_to":"http://192.168.42.1:8043"}
+
+
+OUT:
+ {"devices_found":['aabbcc','aabbdd','aabbee']}
+
