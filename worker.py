@@ -4,24 +4,11 @@
 #
 
 from eq3bt import Thermostat
-import bluepy
+#import bluepy
 import json
 import logging
-import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
-#import requests
 
-trv_lookup = {
-"00:1A:22:0C:27:A9" : "Front_door",
-"00:1A:22:0C:28:9B" : "Old_Dining_Rm",
-"00:1A:22:0C:28:B3" : "Dining_Rm",
-"00:1A:22:0C:2A:8E" : "Ted",
-"00:1A:22:0C:2A:A3" : "Lounge",
-"00:1A:22:0C:2C:B5" : "Master_Bed",
-"00:1A:22:0C:2C:BB" : "Sam",
-"00:1A:22:0C:2C:C8" : "Matty",
-"00:1A:22:0D:A3:6B" : "Study"
-}
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self, code):
@@ -43,16 +30,8 @@ class S(BaseHTTPRequestHandler):
         self._set_response(status)
         obj = json.dumps(obj)
         self.wfile.write(obj.encode('utf-8'))
-        # ("POST request for {}".format(self.path).encode('utf-8'))
-        print("Did processes")
-        print(status)
-
 
 def process_post(path, data):
-    print("=====")
-    print(path)
-    print(data)
-    print("xxx")
     try:
         json_data = json.loads(data)
         print(json.dumps(json_data))
