@@ -39,9 +39,10 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
                 str(self.path), str(self.headers), post_data.decode('utf-8'))
-        self._set_response(202)
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
-        status = process_post(self.path,post_data.decode('utf-8'))
+        status,obj = process_post(self.path,post_data.decode('utf-8'))
+        self._set_response(status)
+        self.wfile.write(json.dump(obj))
+        # ("POST request for {}".format(self.path).encode('utf-8'))
         print("Did processes")
         print(status)
 
@@ -56,43 +57,39 @@ def process_post(path, data):
         print(json.dumps(json_data))
     except:
         logging.error("Failed to parse JSON")
-        return 400
+        return 400,{"result":False}
     if path == "/read_device":
-        if "MAC" in json_data and "return_addr" in json_data:
-            return_addr = json_data["return_addr"]
-            for each in json_data["MAC"]:
-                print(each)
-                status = read_device(each)
+        if "MAC" in json_data:
+            mac = json_data["MAC"]
+            print(mac)
+            status = read_device(each) # XXX rename me
                 if status == False:
-                    return_obj = {"MAC":each, "data":{"result":False}}
-                    requests.post(return_addr, json=return_obj)
-                if isinstance(status, dict):
+                    return 404,{"result":False}
+                elif isinstance(status, dict):
                     # If we got a dict back, then the read must have worked
-                    return_obj = {"MAC":each, "data":status}
-                    requests.post(return_addr, json=return_obj)
-            return 202
-        else:
-            return 400
+                    return 200, status
+                else:
+                    return 500, {"result":False}
     elif path == "/set_device":
-        return 202
+        return 202,""
     elif path == "/scan":
-        return 202
-    else: return 404
+        return 202,""
+    else:
+        return 404,""
 
 def read_device(mac):
-    #return False
     thermo = Thermostat(mac)
     try:
         thermo.update()
         thermo.query_id()
         obj = {
+            "mac": mac,
             "result": True,
             "valve" : thermo.valve_state,
             "target_temperature" : thermo.target_temperature,
             "low_battery" : thermo.low_battery,
             "locked" : thermo.locked
         }
-        #obj_json = json.dumps(obj)
         return obj
     except bluepy.btle.BTLEDisconnectError:
         logging.error("Failed to talk to device.")

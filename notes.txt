@@ -1,7 +1,10 @@
 Listen for a POSTed file.  Can only be JSON.
 
 1. Read data, return results in JSON
-IN: {"MAC":["xxyyzz","xxyyaa",..]}
+path: /read_device
+IN: {"MAC":["xxyyzz","xxyyaa",..],"return_addr":"http://ha:1234/receive"}
+Actually, no.  Do one at a time, since the http request needs to be synchronous.
+IN: {"MAC":"xxyyzz"}
 
 OUT:
 {
@@ -9,6 +12,7 @@ OUT:
    [
        {
            "MAC":"aabbccdd", "data":{
+           "result":true, # true = good false = failed    
            "locked":true,
            "Temperature":27,
            "foo","bar" },
@@ -25,11 +29,14 @@ OUT:
     - Lock
     - Boost
     - 
-
+Path: /set_device
 
 3. Scan
+Do we really need scan?  Just maintain a list of the trvs.  It's not long
+and it doesn't change often.
 
-IN: POST {"scan":true,"results_to":"http://192.168.42.1:8043"}
+/scan
+IN: POST {"scan":true,"return_addr":"http://192.168.42.1:8043"}
 
 
 OUT:
