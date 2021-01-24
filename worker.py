@@ -41,7 +41,7 @@ class S(BaseHTTPRequestHandler):
                 str(self.path), str(self.headers), post_data.decode('utf-8'))
         status,obj = process_post(self.path,post_data.decode('utf-8'))
         self._set_response(status)
-        self.wfile.write(json.dump(obj))
+        self.wfile.write(json.dumps(obj))
         # ("POST request for {}".format(self.path).encode('utf-8'))
         print("Did processes")
         print(status)
