@@ -3,8 +3,8 @@
 # TRV worker node
 #
 
-#from eq3bt import Thermostat
-#import bluepy
+from eq3bt import Thermostat
+import bluepy
 import json
 import logging
 import time
@@ -80,7 +80,7 @@ def process_post(path, data):
     else: return 404
 
 def read_device(mac):
-    return False
+    #return False
     thermo = Thermostat(mac)
     try:
         thermo.update()
@@ -93,7 +93,7 @@ def read_device(mac):
             "locked" : thermo.locked
         }
         #obj_json = json.dumps(obj)
-        return obj_json
+        return obj
     except bluepy.btle.BTLEDisconnectError:
         logging.error("Failed to talk to device.")
         return False
