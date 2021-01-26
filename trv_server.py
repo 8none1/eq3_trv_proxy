@@ -126,7 +126,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.info('Stopping httpd...\n')
 
 if __name__ == '__main__':
-    t = Thread(target=run,())
+    t = Thread(target=run)
     t.start()
     print("I am here")
     mqttc = mqtt.Client("python_pub")
