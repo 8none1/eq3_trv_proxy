@@ -142,5 +142,5 @@ if __name__ == '__main__':
             send_mqtt("trv/"+human_name, trv)
             time.sleep(0.5)
             #thermo.locked=True
-        except bluepy.btle.BTLEDisconnectError:
-            print("Failed to talk to %s.  Name: %s" % (each,human_name))
+        elif trv is False:
+            print("Proxy that one!")
