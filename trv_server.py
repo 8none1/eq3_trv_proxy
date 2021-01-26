@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from eq3bt import Thermostat
-#import bluepy
+import bluepy
 import paho.mqtt.client as mqtt
 import json
 import logging
@@ -130,7 +130,6 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
 if __name__ == '__main__':
     t = Thread(target=run)
     t.start()
-    print("I am here")
     mqttc = mqtt.Client("python_pub")
     mqttc.connect("calculon.whizzy.org", 1883)
     print("Connected to MQTT broker")
@@ -146,3 +145,4 @@ if __name__ == '__main__':
             #thermo.locked=True
         elif trv is False:
             print("Proxy that one!")
+    print("Now I am here")
