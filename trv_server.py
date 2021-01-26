@@ -23,7 +23,7 @@ trv_lookup = {
 "00:1A:22:0D:A3:6B" : "Study"
 }
 
-trv_lookup = {"00:1A:22:0D:A3:6B" : "Study"}
+trv_lookup = {"00:1A:22:0C:2C:BB" : "Sam"}
 
 remote_workers = ["192.168.42.100"]
 
