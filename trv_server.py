@@ -30,10 +30,10 @@ remote_workers = ["192.168.42.100"]
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
     print(json.dumps(trv_obj, indent=4, sort_keys=True))
-	mqttc.reconnect()
-	mqttc.publish(topic,message)
-	mqttc.loop(2)
-	mqttc.disconnect()
+    mqttc.reconnect()
+    mqttc.publish(topic,message)
+    mqttc.loop(2)
+    mqttc.disconnect()
 
 
 class S(BaseHTTPRequestHandler):
