@@ -4,7 +4,6 @@
 #
 
 from eq3bt import Thermostat
-#import bluepy
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -58,7 +57,7 @@ def read_device(mac):
     thermo = Thermostat(mac)
     try:
         thermo.update()
-        thermo.query_id()
+        # thermo.query_id() # I don't think we actually do anything with this
         obj = {
             "mac": mac,
             "result": True,
@@ -81,6 +80,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.info('Starting httpd.. on port '+str(port)+'.\n')
     try:
         httpd.serve_forever()
+        print("here")
     except KeyboardInterrupt:
         pass
     httpd.server_close()
