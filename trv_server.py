@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 from eq3bt import Thermostat
 #import bluepy
