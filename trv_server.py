@@ -26,7 +26,7 @@ trv_lookup = {
 trv_lookup = {"00:1A:22:0C:2C:BB" : "Sam"}
 #trv_lookup = {"00:1A:22:0D:A3:6B" : "Study"}
 
-remote_workers = ["thermopi"]
+remote_workers = ["pi-btlerelay-1"]
 
 #logging.basicConfig(level=logging.DEBUG)
 
@@ -148,6 +148,6 @@ if __name__ == '__main__':
             print("Proxy that one!")
             for each in remote_workers:
                 message = {"MAC":mac}
-                r = requests.post("http://"+each+":8080/read_device", data=message)
+                r = requests.post("http://"+each+":8080/read_device", json=message)
                 print(r)
     print("Now I am here")
