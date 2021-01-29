@@ -8,22 +8,23 @@ import logging
 import time
 from threading import Thread
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
-
+import requests
 
 trv_lookup = {
 "00:1A:22:0C:27:A9" : "Front_door",
 "00:1A:22:0C:28:9B" : "Old_Dining_Rm",
-"00:1A:22:0C:28:B3" : "Dining_Rm",
 "00:1A:22:0C:2A:8E" : "Ted",
 "00:1A:22:0C:2A:A3" : "Lounge",
+"00:1A:22:0C:2C:03" : "Den",
 "00:1A:22:0C:2C:B5" : "Master_Bed",
-"00:1A:22:0C:2C:BB" : "Sam",
 "00:1A:22:0C:2C:C8" : "Matty",
+"00:1A:22:0C:28:B3" : "Dining_Rm",
+"00:1A:22:0C:2C:BB" : "Sam",
 "00:1A:22:0D:A3:6B" : "Study"
 }
 
 trv_lookup = {"00:1A:22:0C:2C:BB" : "Sam"}
+trv_lookup = {"00:1A:22:0D:A3:6B" : "Study"}
 
 remote_workers = ["192.168.42.100"]
 
@@ -36,7 +37,6 @@ def send_mqtt(topic,trv_obj):
     mqttc.publish(topic,message)
     mqttc.loop(2)
     mqttc.disconnect()
-
 
 class S(BaseHTTPRequestHandler):
     sys_version = "0.00"
@@ -134,15 +134,20 @@ if __name__ == '__main__':
     mqttc.connect("calculon.whizzy.org", 1883)
     print("Connected to MQTT broker")
 
-    for each in trv_lookup.keys():
-        human_name = trv_lookup[each]
-        trv = read_device(each)
+
+    for mac in trv_lookup.keys():
+        human_name = trv_lookup[mac]
+        trv = read_device(mac)
         if trv is not False:
             #json_txt = json.dumps(trv)
-            time.sleep(3) # Let the radio settle
+            time.sleep(0.5) # Let the radio settle. Don't really know if this is necessary.  Probably not.
             send_mqtt("trv/"+human_name, trv)
             time.sleep(0.5)
-            #thermo.locked=True
         elif trv is False:
+            # Reading of data failed, so send it to the proxies
             print("Proxy that one!")
+            for each in remote_workers:
+                message = {"MAC":mac}
+                r = requests.post("http://"+each+"/read_device", data=message)
+                print(r)
     print("Now I am here")
