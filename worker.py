@@ -22,6 +22,7 @@ class S(BaseHTTPRequestHandler):
         self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
 
     def do_POST(self):
+        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         status,obj = process_post(self.path,post_data.decode('utf-8'))

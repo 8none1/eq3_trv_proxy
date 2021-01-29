@@ -148,6 +148,6 @@ if __name__ == '__main__':
             print("Proxy that one!")
             for each in remote_workers:
                 message = {"MAC":mac}
-                r = requests.post("http://"+each+"/read_device", data=message)
+                r = requests.post("http://"+each+":8080/read_device", data=message)
                 print(r)
     print("Now I am here")
