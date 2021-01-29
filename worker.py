@@ -62,7 +62,6 @@ def read_device(mac):
         # thermo.query_id() # I don't think we actually do anything with this
         obj = {
             "mac": mac,
-            "result": True,
             "valve" : thermo.valve_state,
             "target_temperature" : thermo.target_temperature,
             "low_battery" : thermo.low_battery,
