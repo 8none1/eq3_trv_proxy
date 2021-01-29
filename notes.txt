@@ -7,20 +7,13 @@ Actually, no.  Do one at a time, since the http request needs to be synchronous.
 IN: {"MAC":"xxyyzz"}
 
 OUT:
-{
-   "devices":
-   [
        {
-           "MAC":"aabbccdd", "data":{
+           "MAC":"aabbccdd",
            "result":true, # true = good false = failed    
            "locked":true,
            "Temperature":27,
-           "foo","bar" },
+           "foo","bar"
        }
-       {},
-       {}
-   ]
-}
 
 
 
