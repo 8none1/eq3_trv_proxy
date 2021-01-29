@@ -25,11 +25,12 @@ trv_lookup = {
 
 remote_workers = ["pi-btlerelay-1"]
 
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
+    logging.debug("Sending MQTT message...")
     logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
     mqttc.reconnect()
     mqttc.publish(topic,message)
@@ -120,27 +121,28 @@ if __name__ == '__main__':
     mqttc.connect("calculon.whizzy.org", 1883)
     logging.info("Connected to MQTT broker")
 
-    for mac in trv_lookup.keys():
-        logging.debug("Starting read for MAC: "+mac)
-        human_name = trv_lookup[mac]
-        trv = read_device(mac)
-        if trv is not False:
-            send_mqtt("trv/"+human_name, trv)
-            #time.sleep(0.5)
-        elif trv is False:
-            # Reading of data failed, so send it to the proxies
-            logging.debug("Locally connection failed, trying remote.")
-            for each in remote_workers:
-                logging.debug("Trying remote worker: "+each)
-                message = {"MAC":mac}
-                r = requests.post("http://"+each+":8080/read_device", json=message)
-                if r.status_code == 200:
-                    logging.debug("Got successful reply from remote worker.")
-                    send_mqtt("trv/"+human_name, r.json())
-                    break
-                else:
-                    logging.debug("Didn't get a good reply.")
-    print("Finished the list.")
-    print("Normally I would sleep, and start again.")
+    while True:
+        for mac in trv_lookup.keys():
+            logging.debug("Starting read for MAC: "+mac)
+            human_name = trv_lookup[mac]
+            trv = read_device(mac)
+            if trv is not False:
+                send_mqtt("trv/"+human_name, trv)
+                #time.sleep(0.5)
+            elif trv is False:
+                # Reading of data failed, so send it to the proxies
+                logging.debug("Locally connection failed, trying remote.")
+                for each in remote_workers:
+                    logging.debug("Trying remote worker: "+each)
+                    message = {"MAC":mac}
+                    r = requests.post("http://"+each+":8080/read_device", json=message)
+                    if r.status_code == 200:
+                        logging.debug("Got successful reply from remote worker.")
+                        send_mqtt("trv/"+human_name, r.json())
+                        break
+                    else:
+                        logging.debug("Didn't get a good reply.")
+        logging.debug("Completed this run.  Sleeping for 10 mins")
+        time.sleep(10 * 60)
 
 

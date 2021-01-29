@@ -1,0 +1,12 @@
+[Unit]
+Description=eq3 TRV Service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/pi/eq3_trv_proxy/trv_server.py
+RestartSec=30
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
