@@ -27,7 +27,7 @@ trv_lookup = {
 remote_workers = ["thermopi", "pi-btle-relay-2"]
 
 #logging.basicConfig(level=logging.DEBUG)
-#logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.ERROR)
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
