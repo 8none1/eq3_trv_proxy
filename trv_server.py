@@ -124,8 +124,8 @@ if __name__ == '__main__':
 
     while True:
         for mac in trv_lookup.keys():
-            logging.debug("Starting read for MAC: "+mac)
             human_name = trv_lookup[mac]
+            logging.debug("Starting read for MAC: "+mac+".  Name: "+human_name)
             trv = read_device(mac)
             if trv is not False:
                 send_mqtt("trv/"+human_name, trv)
