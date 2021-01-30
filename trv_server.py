@@ -9,6 +9,7 @@ import time
 from threading import Thread
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import requests
+from random import randint
 
 trv_lookup = {
 "00:1A:22:0C:27:A9" : "Front_door",
@@ -143,6 +144,6 @@ if __name__ == '__main__':
                     else:
                         logging.debug("Didn't get a good reply for "+human_name)
         logging.debug("Completed this run.  Sleeping for 10 mins")
-        time.sleep(10 * 60)
+        time.sleep(10 * 60 + randint(1,30)) # apply a little jitter
 
 
