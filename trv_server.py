@@ -123,12 +123,15 @@ if __name__ == '__main__':
     logging.info("Connected to MQTT broker")
 
     while True:
+        good_list = []
+        naughty_list = []
         for mac in trv_lookup.keys():
             human_name = trv_lookup[mac]
-            logging.debug("Starting read for MAC: "+mac+".  Name: "+human_name)
+            logging.info("Starting read for MAC: "+mac+".  Name: "+human_name)
             trv = read_device(mac)
             if trv is not False:
                 send_mqtt("trv/"+human_name, trv)
+                good_list.append(human_name)
                 #time.sleep(0.5)
             elif trv is False:
                 # Reading of data failed, so send it to the proxies
@@ -141,12 +144,20 @@ if __name__ == '__main__':
                         if r.status_code == 200:
                             logging.info("Got successful reply from remote worker for "+human_name)
                             send_mqtt("trv/"+human_name, r.json())
+                            good_list.append(human_name)
                             break
                         else:
-                            logging.debug("Didn't get a good reply for "+human_name)
+                            logging.info("Didn't get a good reply for "+human_name)
                     except:
                         logging.info("Failed to connect to remote worker: "+each)
-        logging.debug("Completed this run.  Sleeping for 10 mins")
+            if human_name not in good_list: naughty_list.append(human_name)
+        logging.info("Good list:")
+        for each in good_list:
+            logging.info("    "+each)
+        logging.info("Naughty list:")
+        for each in naughty_list:
+            logging.info("    "+each)
+        logging.info("Completed this run.  Sleeping for 10 mins")
         time.sleep(10 * 60 + randint(1,30)) # apply a little jitter
-
+        good_list, naughty_list = []
 
