@@ -25,7 +25,7 @@ trv_lookup = {
 
 remote_workers = ["thermopi"]
 
-#logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
 
 def send_mqtt(topic,trv_obj):
