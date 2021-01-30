@@ -26,8 +26,8 @@ trv_lookup = {
 
 remote_workers = ["thermopi", "pi-btle-relay-2"]
 
-logging.basicConfig(level=logging.DEBUG)
-#logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.ERROR)
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
@@ -127,7 +127,7 @@ if __name__ == '__main__':
         naughty_list = []
         for mac in trv_lookup.keys():
             human_name = trv_lookup[mac]
-            logging.info("Starting read for MAC: "+mac+".  Name: "+human_name)
+            print("Starting read for MAC: "+mac+".  Name: "+human_name)
             trv = read_device(mac)
             if trv is not False:
                 send_mqtt("trv/"+human_name, trv)
@@ -151,13 +151,14 @@ if __name__ == '__main__':
                     except:
                         logging.info("Failed to connect to remote worker: "+each)
             if human_name not in good_list: naughty_list.append(human_name)
-        logging.info("Good list:")
+        print("Good list:")
         for each in good_list:
-            logging.info("    "+each)
-        logging.info("Naughty list:")
+            print("    "+each)
+        print("Naughty list:")
         for each in naughty_list:
-            logging.info("    "+each)
-        logging.info("Completed this run.  Sleeping for 10 mins")
+            print("    "+each)
+        print("Completed this run.  Sleeping for 10 mins")
         time.sleep(10 * 60 + randint(1,30)) # apply a little jitter
-        good_list, naughty_list = []
+        good_list = [] 
+        naughty_list = []
 
