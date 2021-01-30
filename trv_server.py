@@ -23,7 +23,7 @@ trv_lookup = {
 "00:1A:22:0D:A3:6B" : "Study"
 }
 
-remote_workers = ["pi-btlerelay-1"]
+remote_workers = ["thermopi"]
 
 #logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
@@ -131,17 +131,17 @@ if __name__ == '__main__':
                 #time.sleep(0.5)
             elif trv is False:
                 # Reading of data failed, so send it to the proxies
-                logging.debug("Locally connection failed, trying remote.")
+                logging.info("Locally connection failed, trying remote for: "+human_name)
                 for each in remote_workers:
                     logging.debug("Trying remote worker: "+each)
                     message = {"MAC":mac}
                     r = requests.post("http://"+each+":8080/read_device", json=message)
                     if r.status_code == 200:
-                        logging.debug("Got successful reply from remote worker.")
+                        logging.info("Got successful reply from remote worker for "+human_name)
                         send_mqtt("trv/"+human_name, r.json())
                         break
                     else:
-                        logging.debug("Didn't get a good reply.")
+                        logging.debug("Didn't get a good reply for "+human_name)
         logging.debug("Completed this run.  Sleeping for 10 mins")
         time.sleep(10 * 60)
 
