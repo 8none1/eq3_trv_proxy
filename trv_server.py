@@ -23,7 +23,7 @@ trv_lookup = {
 "00:1A:22:0D:A3:6B" : "Study"
 }
 
-remote_workers = ["thermopi"]
+remote_workers = ["thermopi", "pi-btle-relay-2"]
 
 logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
@@ -32,6 +32,7 @@ def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
     logging.debug("Sending MQTT message...")
     logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
+    mqttc.reinitialise()
     mqttc.reconnect()
     mqttc.publish(topic,message)
     mqttc.loop(2)
@@ -117,7 +118,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
 if __name__ == '__main__':
     t = Thread(target=run)
     t.start()
-    mqttc = mqtt.Client("python_pub")
+    mqttc = mqtt.Client("trv_server")
     mqttc.connect("calculon.whizzy.org", 1883)
     logging.info("Connected to MQTT broker")
 
