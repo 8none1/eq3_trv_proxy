@@ -142,7 +142,7 @@ if __name__ == '__main__':
                     try:
                         r = requests.post("http://"+each+":8080/read_device", json=message)
                         if r.status_code == 200:
-                            logging.info("Got successful reply from remote worker for "+human_name)
+                            print("Got successful reply from remote worker for "+human_name)
                             send_mqtt("trv/"+human_name, r.json())
                             good_list.append(human_name)
                             break
@@ -150,7 +150,9 @@ if __name__ == '__main__':
                             logging.info("Didn't get a good reply for "+human_name)
                     except:
                         logging.info("Failed to connect to remote worker: "+each)
-            if human_name not in good_list: naughty_list.append(human_name)
+            if human_name not in good_list:
+                naughty_list.append(human_name)
+                print("Failed to read device: "+human_name)
         print("Good list:")
         for each in good_list:
             print("    "+each)
