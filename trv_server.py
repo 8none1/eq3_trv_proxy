@@ -136,13 +136,16 @@ if __name__ == '__main__':
                 for each in remote_workers:
                     logging.debug("Trying remote worker: "+each)
                     message = {"MAC":mac}
-                    r = requests.post("http://"+each+":8080/read_device", json=message)
-                    if r.status_code == 200:
-                        logging.info("Got successful reply from remote worker for "+human_name)
-                        send_mqtt("trv/"+human_name, r.json())
-                        break
-                    else:
-                        logging.debug("Didn't get a good reply for "+human_name)
+                    try:
+                        r = requests.post("http://"+each+":8080/read_device", json=message)
+                        if r.status_code == 200:
+                            logging.info("Got successful reply from remote worker for "+human_name)
+                            send_mqtt("trv/"+human_name, r.json())
+                            break
+                        else:
+                            logging.debug("Didn't get a good reply for "+human_name)
+                    except:
+                        logging.info("Failed to connect to remote worker: "+each)
         logging.debug("Completed this run.  Sleeping for 10 mins")
         time.sleep(10 * 60 + randint(1,30)) # apply a little jitter
 
