@@ -24,7 +24,7 @@ trv_lookup = {
 "00:1A:22:0D:A3:6B" : "Study"
 }
 
-remote_workers = ["thermopi", "pi-btle-relay-2"]
+remote_workers = ["pi-btle-relay-2", "thermopi"]
 
 #logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(level=logging.ERROR)
