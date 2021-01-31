@@ -164,3 +164,5 @@ if __name__ == '__main__':
         good_list = [] 
         naughty_list = []
 
+httpd.server_close()
+logging.info('Stopping httpd...\n')
