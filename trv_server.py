@@ -33,7 +33,10 @@ def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
     logging.debug("Sending MQTT message...")
     logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
-    mqttc.connect("calculon.whizzy.org", 1883)
+    try:
+        mqttc.connect("calculon.whizzy.org", 1883)
+    except:
+        print("Couldnt connect to MQTT server?  WHY?!")
     mqttc.publish(topic,message)
     mqttc.loop(2)
     mqttc.disconnect()
