@@ -10,6 +10,7 @@ from threading import Thread
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import requests
 from random import randint
+import sys
 
 trv_lookup = {
 "00:1A:22:0C:27:A9" : "Front_door",
@@ -26,8 +27,8 @@ trv_lookup = {
 
 remote_workers = ["pi-btle-relay-2", "thermopi"]
 
-#logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.ERROR)
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
@@ -163,6 +164,7 @@ if __name__ == '__main__':
         for each in naughty_list:
             print("    "+each)
         print("Completed this run.  Sleeping for 10 mins")
+        sys.stdout.flush()
         time.sleep(10 * 60 + randint(1,30)) # apply a little jitter
         good_list = [] 
         naughty_list = []
