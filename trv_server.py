@@ -131,7 +131,7 @@ if __name__ == '__main__':
         naughty_list = []
         for mac in trv_lookup.keys():
             human_name = trv_lookup[mac]
-            print("Starting read for MAC: "+mac+".  Name: "+human_name)
+            logging.info("Starting read for MAC: "+mac+".  Name: "+human_name)
             trv = read_device(mac)
             if trv is not False:
                 send_mqtt("trv/"+human_name, trv)
@@ -146,7 +146,7 @@ if __name__ == '__main__':
                     try:
                         r = requests.post("http://"+each+":8080/read_device", json=message)
                         if r.status_code == 200:
-                            print("Got successful reply from remote worker for "+human_name)
+                            logging.info("Got successful reply from remote worker for "+human_name)
                             send_mqtt("trv/"+human_name, r.json())
                             good_list.append(human_name)
                             break
@@ -156,14 +156,14 @@ if __name__ == '__main__':
                         logging.info("Failed to connect to remote worker: "+each)
             if human_name not in good_list:
                 naughty_list.append(human_name)
-                print("Failed to read device: "+human_name)
-        print("Good list:")
+                logging.info("Failed to read device: "+human_name)
+        logging.info("Good list:")
         for each in good_list:
-            print("    "+each)
-        print("Naughty list:")
+            logging.info("    "+each)
+        logging.info("Naughty list:")
         for each in naughty_list:
-            print("    "+each)
-        print("Completed this run.  Sleeping for 10 mins")
+            logging.info("    "+each)
+        logging.info("Completed this run.  Sleeping for 10 mins")
         sys.stdout.flush()
         time.sleep(10 * 60 + randint(1,30)) # apply a little jitter
         good_list = [] 
