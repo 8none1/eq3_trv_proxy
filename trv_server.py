@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from eq3bt import Thermostat
+from python_eq3bt import Thermostat
 import bluepy
 import paho.mqtt.client as mqtt
 import json
