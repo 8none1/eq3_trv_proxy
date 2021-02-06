@@ -1,0 +1,3 @@
+[submodule "python-eq3bt"]
+	path = python-eq3bt
+	url = https://github.com/8none1/python-eq3bt.git
