@@ -1,6 +1,3 @@
 [submodule "python-eq3bt"]
 	path = python_eq3bt
 	url = https://github.com/8none1/python-eq3bt.git
-[submodule "bluepy"]
-	path = bluepy
-	url = git@github.com:IanHarvey/bluepy.git
