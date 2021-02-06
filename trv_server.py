@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from python_eq3bt import Thermostat
+from python_eq3bt import eq3bt
 import bluepy
 import paho.mqtt.client as mqtt
 import json
@@ -92,7 +92,7 @@ def process_post(path, data):
 
 def read_device(mac):
     logging.debug("Trying to read from TRV...")
-    thermo = Thermostat(mac)
+    thermo = eq3.Thermostat(mac)
     try:
         thermo.update()
         obj = {
