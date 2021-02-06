@@ -131,7 +131,7 @@ if __name__ == '__main__':
         naughty_list = []
         for mac in trv_lookup.keys():
             human_name = trv_lookup[mac]
-            logging.info("Starting read for MAC: "+mac+".  Name: "+human_name)
+            print("Starting read for MAC: "+mac+".  Name: "+human_name)
             trv = read_device(mac)
             if trv is not False:
                 send_mqtt("trv/"+human_name, trv)
@@ -139,7 +139,7 @@ if __name__ == '__main__':
                 #time.sleep(0.5)
             elif trv is False:
                 # Reading of data failed, so send it to the proxies
-                logging.info("Locally connection failed, trying remote for: "+human_name)
+                logging.info("Local connection failed, trying remote for: "+human_name)
                 for each in remote_workers:
                     logging.debug("Trying remote worker: "+each)
                     message = {"MAC":mac}
