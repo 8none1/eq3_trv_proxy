@@ -56,7 +56,7 @@ def process_post(path, data):
         return 404,""
 
 def read_device(mac):
-    thermo = Thermostat(mac)
+    thermo = Thermostat(mac,retry=2,timeout=20)
     try:
         thermo.update()
         # thermo.query_id() # I don't think we actually do anything with this

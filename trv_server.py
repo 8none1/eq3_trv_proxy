@@ -92,7 +92,7 @@ def process_post(path, data):
 
 def read_device(mac):
     logging.debug("Trying to read from TRV...")
-    thermo = eq3bt.Thermostat(mac)
+    thermo = eq3bt.Thermostat(mac, retry=1, timeout=20)
     try:
         thermo.update()
         obj = {
