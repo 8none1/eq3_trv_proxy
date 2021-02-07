@@ -13,15 +13,15 @@ from random import randint
 import sys
 
 trv_lookup = {
-"00:1A:22:0C:27:A9" : "Front_door",
-"00:1A:22:0C:28:9B" : "Old_Dining_Rm",
-"00:1A:22:0C:2A:8E" : "Ted",
-"00:1A:22:0C:2A:A3" : "Lounge",
-"00:1A:22:0C:2C:03" : "Den",
-"00:1A:22:0C:2C:B5" : "Master_Bed",
-"00:1A:22:0C:2C:C8" : "Matty",
-"00:1A:22:0C:28:B3" : "Dining_Rm",
-"00:1A:22:0C:2C:BB" : "Sam",
+#"00:1A:22:0C:27:A9" : "Front_door",
+#"00:1A:22:0C:28:9B" : "Old_Dining_Rm",
+#"00:1A:22:0C:2A:8E" : "Ted",
+#"00:1A:22:0C:2A:A3" : "Lounge",
+#"00:1A:22:0C:2C:03" : "Den",
+#"00:1A:22:0C:2C:B5" : "Master_Bed",
+#"00:1A:22:0C:2C:C8" : "Matty",
+#"00:1A:22:0C:28:B3" : "Dining_Rm",
+#"00:1A:22:0C:2C:BB" : "Sam",
 "00:1A:22:0D:A3:6B" : "Study"
 }
 
@@ -92,7 +92,7 @@ def process_post(path, data):
 
 def read_device(mac):
     logging.debug("Trying to read from TRV...")
-    thermo = eq3.Thermostat(mac)
+    thermo = eq3bt.Thermostat(mac)
     try:
         thermo.update()
         obj = {
