@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from python_eq3bt import eq3bt as eq3
+import eq3bt
 import bluepy
 import paho.mqtt.client as mqtt
 import json
