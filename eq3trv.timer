@@ -1,6 +1,6 @@
 [Unit]
 Description=Run TRV poller every 10 mins
-Requires: eq3trv.Service
+Requires=eq3trv.Service
 
 [Timer]
 Unit=eq3trv.service
