@@ -1,11 +1,10 @@
 [Unit]
-Description=eq3 TRV Server
+Description=eq3 TRV Poller
+Wants=eq3trv.timer
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/python3 /home/pi/eq3_trv_proxy/trv_server.py
-RestartSec=30
-Restart=always
+ExecStart=/home/pi/py_venvs/eq3_trv_proxy/testenv/bin/python3 /home/pi/py_venvs/eq3_trv_proxy/trv_server.py
+WorkingDirectory=/home/pi/py_venvs/eq3_trv_proxy
 User=pi
 
 [Install]

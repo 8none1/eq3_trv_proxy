@@ -1,0 +1,12 @@
+[Unit]
+Description=Run TRV poller every 10 mins
+Requires: eq3trv.Service
+
+[Timer]
+Unit=eq3trv.service
+OnUnitInactiveSec=10m
+RandomizedDelay=30s
+AccurarySec=1s
+
+[Install]
+WantedBy=timers.target
