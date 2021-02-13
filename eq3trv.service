@@ -3,7 +3,7 @@ Description=eq3 TRV Poller
 Wants=eq3trv.timer
 
 [Service]
-ExecStart=/home/pi/py_venvs/eq3_trv_proxy/testenv/bin/python3 /home/pi/py_venvs/eq3_trv_proxy/trv_server.py
+ExecStart=/home/pi/py_venvs/eq3_trv_proxy/testvenv/bin/python3 /home/pi/py_venvs/eq3_trv_proxy/trv_server.py
 WorkingDirectory=/home/pi/py_venvs/eq3_trv_proxy
 User=pi
 
