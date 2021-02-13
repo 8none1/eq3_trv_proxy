@@ -54,7 +54,7 @@ def read_device(mac):
         }
     except bluepy.btle.BTLEDisconnectError:
         logging.error("Failed to talk to device.")
-   return obj
+    return obj
 
 
 mqttc = mqtt.Client("trv_server")
