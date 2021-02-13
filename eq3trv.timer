@@ -5,7 +5,7 @@ Requires=eq3trv.service
 [Timer]
 Unit=eq3trv.service
 OnUnitInactiveSec=10m
-RandomizedDelay=3m
+#RandomizedDelay=3m
 
 [Install]
 WantedBy=timers.target
