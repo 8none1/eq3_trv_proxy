@@ -91,8 +91,8 @@ def process_post(path, data):
         return 404,{"result":False}
 
 def dispatch_request(endpoint,message):
-    url = "http://"+each+":8021/"+endpoint
     for each in remote_workers:
+        url = "http://"+each+":8021/"+endpoint
         logging.debug("Trying remote worker: "+each)
         try:
             r = requests.post(url, json=message)
