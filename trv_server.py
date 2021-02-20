@@ -96,6 +96,10 @@ def dispatch_request(endpoint,message):
         logging.debug("Trying remote worker: "+each)
         try:
             r = requests.post(url, json=message)
+            print("xxx"))
+            print(r)
+            print(r.status_code)
+            print(r.json)
             if r.status_code == 200:
                 logging.info("Got successful reply from remote worker "+each+" for "+human_name)
                 return r
