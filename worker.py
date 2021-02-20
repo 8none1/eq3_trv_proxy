@@ -31,6 +31,7 @@ class S(BaseHTTPRequestHandler):
 
     def do_POST(self):
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+        if not self.headers: return
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         status,obj = process_post(self.path,post_data.decode('utf-8'))
@@ -72,9 +73,9 @@ def process_post(path, data):
             if "mode" in json_data:
                 mode = MODE_LOOKUP[json_data["mode"]]
                 thermo.mode = mode
-            if temperature in json_data:
+            if "temperature" in json_data:
                 thermo.target_temperature = json_data["temperature"]
-            if lock in json_data:
+            if "lock" in json_data:
                 thermo.locked = json_data["lock"]       
         return 202,{"result":True}
     elif path == "/scan":
