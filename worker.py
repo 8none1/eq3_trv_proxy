@@ -4,7 +4,7 @@
 #
 
 import eq3bt
-#import bluepy
+import bluepy
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
