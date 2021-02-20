@@ -25,12 +25,12 @@ class S(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+        logging.debug("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         self._set_response(400)
         self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
 
     def do_POST(self):
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+        logging.debug("POST request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         if not self.headers: return
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
@@ -42,7 +42,7 @@ class S(BaseHTTPRequestHandler):
 def process_post(path, data):
     try:
         json_data = json.loads(data)
-        logging.info(json.dumps(json_data))
+        logging.debug(json.dumps(json_data))
     except:
         logging.error("Failed to parse JSON")
         return 400,{"result":False, "message":"Failed to parse JSON"}
@@ -84,7 +84,7 @@ def process_post(path, data):
                 logging.error("Something went wrong trying to set device")
                 return 500,{"result":False,"message":"Failed to set device"}
         else:
-            print("No mac")
+            logging.error("No mac")
             return 500, {"result":False, 
               "message":"MAC address not supplied"}
     elif path == "/scan":

@@ -37,12 +37,12 @@ class S(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+        logging.debug("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         self._set_response(400)
         self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
 
     def do_POST(self):
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+        logging.debug("POST request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         if not self.headers: return
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
@@ -54,7 +54,7 @@ class S(BaseHTTPRequestHandler):
 def process_post(path, data):
     try:
         json_data = json.loads(data)
-        logging.info(json.dumps(json_data))
+        logging.debug(json.dumps(json_data))
     except:
         logging.error("Failed to parse JSON")
         return 400,{"result":False, "message":"Failed to parse JSON"}
@@ -83,7 +83,7 @@ def process_post(path, data):
             else:
                 return r.status_code,r.json()
         else:
-            print("No mac")
+            logging.error("No mac")
             return 500, {"result":False, 
               "message":"MAC address not supplied"}
     elif path == "/scan":
@@ -115,17 +115,17 @@ def poll_all_trvs():
     for mac in trv_lookup.keys():
         time.sleep(0.5) # Just to let bluepy helper settle
         human_name = trv_lookup[mac]
-        print("Starting read for MAC: "+mac+".  Name: "+human_name)
+        logging.info("Starting read for MAC: "+mac+".  Name: "+human_name)
         r = dispatch_request("read_device",{"MAC":mac})
         if r is False:
             naughty_list.append(human_name)
-            logging.info("Failed to read device: "+human_name)
+            logging.debug("Failed to read device: "+human_name)
             continue
         elif r.status_code == 200:
             send_mqtt("trv/"+human_name, r.json())
             good_list.append(human_name)
         else:
-            print("Something went wrong polling this device "+human_name)
+            logging.error("Something went wrong polling this device "+human_name)
 
     logging.info("Good list:")
     for each in good_list:
@@ -137,11 +137,11 @@ def poll_all_trvs():
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
     logging.info("Sending MQTT message...")
-    logging.info(json.dumps(trv_obj, indent=4, sort_keys=True))
+    logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
     try:
         mqttc.connect("calculon.whizzy.org", 1883)
     except:
-        print("Couldnt connect to MQTT server?  WHY?!")
+        logging.error("Couldnt connect to MQTT server?  WHY?!")
     mqttc.publish(topic,message)
     mqttc.loop(2)
     mqttc.disconnect()
@@ -156,7 +156,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
     try:
         while True:
             poll_all_trvs()
-            print("Sleeping for 10 mins")
+            logging.debug("Sleeping for 10 mins")
             time.sleep(10*60)
     except KeyboardInterrupt:
         x.join()
