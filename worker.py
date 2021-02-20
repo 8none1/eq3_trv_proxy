@@ -3,12 +3,20 @@
 # TRV worker node
 #
 
-from eq3bt import Thermostat
-import bluepy
+import eq3bt
+#from eq3bt import Thermostat
+#import bluepy
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+MODE_LOOKUP = {
+    "on" : 1,
+    "off" : 0,
+    "boost" : 5,
+    "auto" : 2,
+    "manual" : 3
+}
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self, code):
@@ -40,23 +48,42 @@ def process_post(path, data):
     if path == "/read_device":
         if "MAC" in json_data:
             mac = json_data["MAC"]
-            status = read_device(mac) # XXX rename me from status
-            if status == False:
+            thermo_state = read_device(mac)
+            if thermo_state == False:
                 return 404,{"result":False}
-            elif isinstance(status, dict):
+            elif isinstance(thermo_state, dict):
                 # If we got a dict back, then the read must have worked
-                return 200, status
+                return 200, thermo_state
             else:
                 return 500, {"result":False}
     elif path == "/set_device":
-        return 202,""
+        # We expect a JSON object as a dict
+        # MAC: mac
+        # mode: [manual|auto|boost|off|on(?)]  # On would have no timeout, but might still be useful
+        # temperature : float
+        # lock : [True|False]
+        if "MAC" not in json_data:
+            print("No mac")
+            return 500, {"result":False, 
+              "message":"MAC address not supplied"}
+        else:
+            mac = json_data["MAC"]
+            thermo = eq3bt.Thermostat(mac)
+            if "mode" in json_data:
+                mode = MODE_LOOKUP[json_data["mode"]]
+                thermo.mode = mode
+            if temperature in json_data:
+                thermo.target_temperature = json_data["temperature"]
+            if lock in json_data:
+                thermo.locked = json_data["lock"]       
+        return 202,{"result":True}
     elif path == "/scan":
-        return 202,""
+        return 202,{"result":True}
     else:
-        return 404,""
+        return 404,{"result":False}
 
 def read_device(mac):
-    thermo = Thermostat(mac,retry=2,timeout=20)
+    thermo = eq3bt.Thermostat(mac)
     try:
         thermo.update()
         # thermo.query_id() # I don't think we actually do anything with this
@@ -81,7 +108,6 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.info('Starting httpd.. on port '+str(port)+'.\n')
     try:
         httpd.serve_forever()
-        print("here")
     except KeyboardInterrupt:
         pass
     httpd.server_close()
