@@ -4,8 +4,7 @@
 #
 
 import eq3bt
-#from eq3bt import Thermostat
-import bluepy
+#import bluepy
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -67,7 +66,6 @@ def process_post(path, data):
         #   "lock" : [True|False]
         # }
         if "MAC" in json_data:
-            # Might need to wrap this in a try in case bluepy fails to talk to the device.
             mac = json_data["MAC"]
             thermo = eq3bt.Thermostat(mac)
             try:
@@ -78,10 +76,12 @@ def process_post(path, data):
                     thermo.target_temperature = json_data["temperature"]
                 if "lock" in json_data:
                     thermo.locked = json_data["lock"]       
-                return 202,{"result":True}
+                return 200,{"result":True}
             except bluepy.btle.BTLEDisconnectError:
+                logging.error("Failed to talk to device.")
                 return 404,{"results":False, "message":"Couldn't connect to device"}
             except:
+                logging.error("Something went wrong trying to set device")
                 return 500,{"result":False,"message":"Failed to set device"}
         else:
             print("No mac")
@@ -112,7 +112,7 @@ def read_device(mac):
         return False
 
 
-def run(server_class=HTTPServer, handler_class=S, port=8080):
+def run(server_class=HTTPServer, handler_class=S, port=8021):
     logging.basicConfig(level=logging.INFO)
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
