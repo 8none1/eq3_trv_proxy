@@ -6,6 +6,8 @@ import logging
 import requests
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import time
+
 
 
 trv_lookup = {
@@ -119,15 +121,15 @@ def poll_all_trvs():
         print("Starting read for MAC: "+mac+".  Name: "+human_name)
         r = dispatch_request("read_device",{"MAC":mac})
         if r is False:
+            naughty_list.append(human_name)
+            logging.info("Failed to read device: "+human_name)
             continue
         elif r.status_code == 200:
             send_mqtt("trv/"+human_name, r.json())
             good_list.append(human_name)
         else:
             print("Something went wrong polling this device "+human_name)
-        if human_name not in good_list:
-            naughty_list.append(human_name)
-            logging.info("Failed to read device: "+human_name)
+
     logging.info("Good list:")
     for each in good_list:
         logging.info("    "+each)
@@ -137,8 +139,8 @@ def poll_all_trvs():
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
-    logging.debug("Sending MQTT message...")
-    logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
+    logging.info("Sending MQTT message...")
+    logging.info(json.dumps(trv_obj, indent=4, sort_keys=True))
     try:
         mqttc.connect("calculon.whizzy.org", 1883)
     except:
@@ -157,6 +159,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
     try:
         while True:
             poll_all_trvs()
+            print("Sleeping for 10 mins")
             time.sleep(10*60)
     except KeyboardInterrupt:
         x.join()
