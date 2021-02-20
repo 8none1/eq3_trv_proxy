@@ -5,7 +5,7 @@
 
 import eq3bt
 #from eq3bt import Thermostat
-#import bluepy
+import bluepy
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
