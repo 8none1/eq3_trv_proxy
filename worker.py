@@ -79,7 +79,7 @@ def process_post(path, data):
                 if "lock" in json_data:
                     thermo.locked = json_data["lock"]       
                 return 202,{"result":True}
-            except BTLEDisconnectError:
+            except bluepy.btle.BTLEDisconnectError:
                 return 404,{"results":False, "message":"Couldn't connect to device"}
             except:
                 return 500,{"result":False,"message":"Failed to set device"}
