@@ -81,7 +81,7 @@ def process_post(path, data):
             if r is False:
                 return 404,{"result":False}
             else:
-                return r.status_code,r.json
+                return r.status_code,r.json()
         else:
             print("No mac")
             return 500, {"result":False, 
