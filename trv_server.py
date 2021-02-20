@@ -103,7 +103,7 @@ def dispatch_request(endpoint,message):
                 logging.info("Didn't get a good reply from remote worker for "+human_name)
         except:
             logging.info("Failed to connect to remote worker: "+each)
-    logging.log("Failed to get a result from any remote worker.")
+    logging.info("Failed to get a result from any remote worker.")
     return False
 
 def poll_all_trvs():
@@ -149,12 +149,14 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
     logging.info('Starting httpd.. on port '+str(port)+'.\n')
     x = threading.Thread(target=httpd.serve_forever)
     x.start()
-    while True:
-        poll_all_trvs()
-        time.sleep(10*60)
-    x.join()
-    httpd.server_close()
-    logging.info('Stopping httpd...\n')
+    try:
+        while True:
+            poll_all_trvs()
+            time.sleep(10*60)
+    except KeyboardInterrupt:
+        x.join()
+        httpd.server_close()
+        logging.info('Stopping httpd...\n')
 
 if __name__ == '__main__':
     mqttc = mqtt.Client("trv_server")
