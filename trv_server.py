@@ -93,6 +93,7 @@ def process_post(path, data):
 def dispatch_request(endpoint,message):
     for each in remote_workers:
         url = "http://"+each+":8021/"+endpoint
+        human_name = trv_lookup[message['MAC']]
         logging.info("Trying remote worker: "+each)
         try:
             r = requests.post(url, json=message)
