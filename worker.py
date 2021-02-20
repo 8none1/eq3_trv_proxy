@@ -10,7 +10,8 @@ import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-MODE_LOOKUP = {
+
+MODE_LOOKUP = { # From the eq3bt library
     "on" : 1,
     "off" : 0,
     "boost" : 5,
@@ -45,7 +46,7 @@ def process_post(path, data):
         logging.info(json.dumps(json_data))
     except:
         logging.error("Failed to parse JSON")
-        return 400,{"result":False}
+        return 400,{"result":False, "message":"Failed to parse JSON"}
     if path == "/read_device":
         if "MAC" in json_data:
             mac = json_data["MAC"]
@@ -57,28 +58,37 @@ def process_post(path, data):
                 return 200, thermo_state
             else:
                 return 500, {"result":False}
+        return 400,{"result",False}
     elif path == "/set_device":
         # We expect a JSON object as a dict
-        # MAC: mac
-        # mode: [manual|auto|boost|off|on(?)]  # On would have no timeout, but might still be useful
-        # temperature : float
-        # lock : [True|False]
-        if "MAC" not in json_data:
+        # { "MAC": mac,
+        #   "mode": ["manual"|"auto"|"boost"|"off"|"on", # On would have no timeout, but might still be useful
+        #   "temperature" : float,
+        #   "lock" : [True|False]
+        # }
+        if "MAC" in json_data:
+            # Might need to wrap this in a try in case bluepy fails to talk to the device.
+            mac = json_data["MAC"]
+            thermo = eq3bt.Thermostat(mac)
+            try:
+                if "mode" in json_data:
+                    mode = MODE_LOOKUP[json_data["mode"]]
+                    thermo.mode = mode
+                if "temperature" in json_data:
+                    thermo.target_temperature = json_data["temperature"]
+                if "lock" in json_data:
+                    thermo.locked = json_data["lock"]       
+                return 202,{"result":True}
+            except BTLEDisconnectError:
+                return 404,{"results":False, "message":"Couldn't connect to device"}
+            except:
+                return 500,{"result":False,"message":"Failed to set device"}
+        else:
             print("No mac")
             return 500, {"result":False, 
               "message":"MAC address not supplied"}
-        else:
-            mac = json_data["MAC"]
-            thermo = eq3bt.Thermostat(mac)
-            if "mode" in json_data:
-                mode = MODE_LOOKUP[json_data["mode"]]
-                thermo.mode = mode
-            if "temperature" in json_data:
-                thermo.target_temperature = json_data["temperature"]
-            if "lock" in json_data:
-                thermo.locked = json_data["lock"]       
-        return 202,{"result":True}
     elif path == "/scan":
+        # Not implemented
         return 202,{"result":True}
     else:
         return 404,{"result":False}
