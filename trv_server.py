@@ -61,7 +61,7 @@ def process_post(path, data):
     if path == "/query_device":
         if "MAC" in json_data:
             mac = json_data["MAC"]
-            r = dispatch_request("read_device",{"MAC":"mac"})
+            r = dispatch_request("read_device",{"MAC":mac})
             if r is False:
                 return 404,{"result":True, "message":"Failed to query device"}
             else:
