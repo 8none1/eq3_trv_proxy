@@ -96,7 +96,7 @@ def dispatch_request(endpoint,message):
         logging.debug("Trying remote worker: "+each)
         try:
             r = requests.post(url, json=message)
-            print("xxx"))
+            print("xxx")
             print(r)
             print(r.status_code)
             print(r.json)
