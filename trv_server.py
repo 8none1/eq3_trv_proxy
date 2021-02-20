@@ -99,10 +99,6 @@ def dispatch_request(endpoint,message):
         logging.info("Trying remote worker: "+each)
         try:
             r = requests.post(url, json=message)
-            print("xxx")
-            print(r)
-            print(r.status_code)
-            print(r.json())
             if r.status_code == 200:
                 logging.info("Got successful reply from remote worker "+each+" for "+human_name)
                 return r
@@ -117,6 +113,7 @@ def poll_all_trvs():
     good_list = []
     naughty_list = []
     for mac in trv_lookup.keys():
+        time.sleep(0.5) # Just to let bluepy helper settle
         human_name = trv_lookup[mac]
         print("Starting read for MAC: "+mac+".  Name: "+human_name)
         r = dispatch_request("read_device",{"MAC":mac})
