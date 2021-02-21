@@ -75,13 +75,13 @@ def process_post(path, data):
                 if "mode" in json_data:
                     mode = MODE_LOOKUP[json_data["mode"]]
                     thermo.mode = mode
-                    logging.info("    Set mode: %s" % mode)
+                    logging.info("    ✓ Set mode: %s" % mode)
                 if "temperature" in json_data:
                     thermo.target_temperature = json_data["temperature"]
-                    logging.info("    Set temperature: %s" % json_data["temperature"])
+                    logging.info("    ✓ Set temperature: %s" % json_data["temperature"])
                 if "lock" in json_data:
                     thermo.locked = json_data["lock"]
-                    logging.info("    Set lock: %s" % json_data["lock"])  
+                    logging.info("    ✓ Set lock: %s" % json_data["lock"])  
                 return 200,{"result":True}
             except bluepy.btle.BTLEDisconnectError:
                 logging.error("    Failed to talk to device: %s" % mac)
