@@ -96,17 +96,17 @@ def dispatch_request(endpoint,message):
     for each in remote_workers:
         url = "http://"+each+":8021/"+endpoint
         human_name = trv_lookup[message['MAC']]
-        logging.info("Trying remote worker: "+each)
+        logging.info("    Trying remote worker: "+each)
         try:
             r = requests.post(url, json=message)
             if r.status_code == 200:
-                logging.info("Got successful reply from remote worker "+each+" for "+human_name)
+                logging.info("    Got successful reply from remote worker "+each+" for "+human_name)
                 return r
             else:
-                logging.info("Didn't get a good reply from remote worker for "+human_name)
+                logging.info("    Didn't get a good reply from remote worker for "+human_name)
         except:
-            logging.info("Failed to connect to remote worker: "+each)
-    logging.info("Failed to get a result from any remote worker.")
+            logging.info("    Failed to connect to remote worker: "+each)
+    logging.info("    Failed to get a result from any remote worker.")
     return False
 
 def poll_all_trvs():
