@@ -85,7 +85,10 @@ def process_post(path, data):
                 return 200,{"result":True}
             except bluepy.btle.BTLEDisconnectError:
                 logging.error("    Failed to talk to device: %s" % mac)
-                return 404,{"results":False, "message":"Couldn't connect to device"}
+                return 404,{"result":False, "message":"Couldn't connect to device"}
+            except bluepy.btle.BTLETimeoutError:
+                logging.info("    Timed out talking to device: %s" % mac)
+                return 404,{"result":False}
             except:
                 raise
                 logging.error("    Something went wrong trying to set device: %s" % mac)
