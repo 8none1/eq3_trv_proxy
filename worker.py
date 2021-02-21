@@ -45,12 +45,12 @@ def process_post(path, data):
         json_data = json.loads(data)
         logging.debug(json.dumps(json_data))
     except:
-        logging.error("Failed to parse JSON")
+        logging.error("    Failed to parse JSON")
         return 400,{"result":False, "message":"Failed to parse JSON"}
     if path == "/read_device":
         if "MAC" in json_data:
             mac = json_data["MAC"]
-            logging.info("Trying to read MAC: "+mac)
+            logging.info("    Trying to read MAC: "+mac)
             thermo_state = read_device(mac)
             if thermo_state == False:
                 return 404,{"result":False}
@@ -67,6 +67,7 @@ def process_post(path, data):
         #   "temperature" : float,
         #   "lock" : [True|False]
         # }
+        logging.info("    Doing SET device...")
         if "MAC" in json_data:
             mac = json_data["MAC"]
             thermo = eq3bt.Thermostat(mac)
@@ -74,19 +75,22 @@ def process_post(path, data):
                 if "mode" in json_data:
                     mode = MODE_LOOKUP[json_data["mode"]]
                     thermo.mode = mode
+                    logging.info("    Set mode: %s" % mode)
                 if "temperature" in json_data:
                     thermo.target_temperature = json_data["temperature"]
+                    logging.info("    Set temperature: %s" % json_data["temperature"])
                 if "lock" in json_data:
                     thermo.locked = json_data["lock"]
+                    logging.info("    Set lock: %s" % json_data["lock"])  
                 return 200,{"result":True}
             except bluepy.btle.BTLEDisconnectError:
-                logging.error("Failed to talk to device.")
+                logging.error("    Failed to talk to device: %s" % mac)
                 return 404,{"results":False, "message":"Couldn't connect to device"}
             except:
-                logging.error("Something went wrong trying to set device")
+                logging.error("    Something went wrong trying to set device: %s" % mac)
                 return 500,{"result":False,"message":"Failed to set device"}
         else:
-            logging.error("No mac")
+            logging.error("    No mac")
             return 500, {"result":False,
               "message":"MAC address not supplied"}
     elif path == "/scan":
@@ -110,10 +114,10 @@ def read_device(mac):
         logging.info(json.dumps(obj))
         return obj
     except bluepy.btle.BTLEDisconnectError:
-        logging.error("Failed to talk to device.")
+        logging.error("    Failed to talk to device.")
         return False
     except bluepy.btle.BTLETimeoutError:
-        logging.error("Timedout when trying to connect to device.")
+        logging.error("    Timedout when trying to connect to device.")
         return False
 
 
