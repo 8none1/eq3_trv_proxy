@@ -87,6 +87,7 @@ def process_post(path, data):
                 logging.error("    Failed to talk to device: %s" % mac)
                 return 404,{"results":False, "message":"Couldn't connect to device"}
             except:
+                raise
                 logging.error("    Something went wrong trying to set device: %s" % mac)
                 return 500,{"result":False,"message":"Failed to set device"}
         else:
