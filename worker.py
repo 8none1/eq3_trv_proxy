@@ -9,6 +9,7 @@ import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+logging.basicConfig(level=logging.DEBUG)
 
 MODE_LOOKUP = { # From the eq3bt library
     "on" : 1,
@@ -76,7 +77,7 @@ def process_post(path, data):
                 if "temperature" in json_data:
                     thermo.target_temperature = json_data["temperature"]
                 if "lock" in json_data:
-                    thermo.locked = json_data["lock"]       
+                    thermo.locked = json_data["lock"]
                 return 200,{"result":True}
             except bluepy.btle.BTLEDisconnectError:
                 logging.error("Failed to talk to device.")
@@ -86,7 +87,7 @@ def process_post(path, data):
                 return 500,{"result":False,"message":"Failed to set device"}
         else:
             logging.error("No mac")
-            return 500, {"result":False, 
+            return 500, {"result":False,
               "message":"MAC address not supplied"}
     elif path == "/scan":
         # Not implemented
@@ -110,6 +111,9 @@ def read_device(mac):
         return obj
     except bluepy.btle.BTLEDisconnectError:
         logging.error("Failed to talk to device.")
+        return False
+    except bluepy.btle.BTLETimeoutError:
+        logging.error("Timedout when trying to connect to device.")
         return False
 
 
