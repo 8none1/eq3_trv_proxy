@@ -82,21 +82,20 @@ def process_post(path, data):
                 if "lock" in json_data:
                     thermo.locked = json_data["lock"]
                     logging.info("    ✓ Set lock: %s" % json_data["lock"])  
-                return 200,{"result":True}
+                return 200,{"result":True,"MAC":mac}
             except bluepy.btle.BTLEDisconnectError:
                 logging.error("    Failed to talk to device: %s" % mac)
-                return 404,{"result":False, "message":"Couldn't connect to device"}
+                return 404,{"result":False, "message":"Couldn't connect to device", "MAC":mac}
             except bluepy.btle.BTLETimeoutError:
                 logging.info("    Timed out talking to device: %s" % mac)
-                return 404,{"result":False}
+                return 404,{"result":False, "MAC":mac}
             except:
-                raise
                 logging.error("    Something went wrong trying to set device: %s" % mac)
-                return 500,{"result":False,"message":"Failed to set device"}
+                return 500,{"result":False,"message":"Failed to set device", "MAC":mac}
         else:
             logging.error("    No mac")
             return 500, {"result":False,
-              "message":"MAC address not supplied"}
+              "message":"MAC address not supplied", "MAC":mac}
     elif path == "/scan":
         # Not implemented
         return 202,{"result":True}
