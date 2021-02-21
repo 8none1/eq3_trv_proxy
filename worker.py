@@ -49,6 +49,7 @@ def process_post(path, data):
     if path == "/read_device":
         if "MAC" in json_data:
             mac = json_data["MAC"]
+            logging.info("Trying to read MAC: "+mac)
             thermo_state = read_device(mac)
             if thermo_state == False:
                 return 404,{"result":False}
