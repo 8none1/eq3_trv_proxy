@@ -88,7 +88,7 @@ def process_post(path, data):
                 return 404,{"result":False, "message":"Couldn't connect to device", "MAC":mac}
             except bluepy.btle.BTLETimeoutError:
                 logging.info("    Timed out talking to device: %s" % mac)
-                return 404,{"result":False, "MAC":mac}
+                return 404,{"result":False, "MAC":mac,"message":"Time out"}
             except:
                 logging.error("    Something went wrong trying to set device: %s" % mac)
                 return 500,{"result":False,"message":"Failed to set device", "MAC":mac}
@@ -100,7 +100,7 @@ def process_post(path, data):
         # Not implemented
         return 202,{"result":True}
     else:
-        return 404,{"result":False}
+        return 404,{"result":False,"message":"Unknown or unsupported path"}
 
 def read_device(mac):
     thermo = eq3bt.Thermostat(mac)
