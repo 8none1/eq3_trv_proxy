@@ -1,0 +1,13 @@
+[Unit]
+Description=eq3 TRV Coordinator
+Wants=eq3trv.timer
+
+[Service]
+Type=simple
+ExecStart=/home/pi/trv_server/trv_venv/bin/python3 /home/pi/trv_server/eq3_trv_proxy/trv_server.py
+RestartSec=30
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

@@ -3,7 +3,7 @@ Description=eq3 TRV Worker
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /home/pi/eq3_trv_proxy/worker.py
+ExecStart=/home/pi/trv_server/trv_venv/bin/python3 /home/pi/trv_server/eq3_trv_proxy/worker.py
 RestartSec=30
 Restart=always
 User=pi
