@@ -9,7 +9,7 @@ import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 MODE_LOOKUP = { # From the eq3bt library
     "on" : 1,
