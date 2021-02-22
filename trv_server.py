@@ -58,17 +58,23 @@ def process_post(path, data):
     except:
         logging.error("Failed to parse JSON")
         return 400,{"result":False, "message":"Failed to parse JSON"}
+    
+    if "MAC" not in json_data:
+        logging.error("No MAC provided")
+        return 500,{"result":False,
+          "message":"No MAC address provided"}
+    
+    mac = json_data["MAC"]
+    human_name = trv_lookup[mac]
+        
     if path == "/query_device":
-        if "MAC" in json_data:
-            mac = json_data["MAC"]
-            r = dispatch_request("read_device",{"MAC":mac})
-            if r is False:
-                return 404,{"result":True, "message":"Failed to query device"}
-            else:
-                send_mqtt("trv/"+mac, r.json())
-                return 200,{"result":True}
-        else:    
-            return 400,{"result",False}
+        r = dispatch_request("read_device",{"MAC":mac})
+        if r is False:
+            return 404,{"result":False, "message":"Failed to query device", "MAC":mac, "human_name":human_name}
+        else:
+            send_mqtt("trv/"+mac, r.json())
+            return 200,{"result":True, "MAC":mac, "human_name":human_name}
+
     elif path == "/set_device":
         # We expect a JSON object as a dict
         # { "MAC": mac,
@@ -76,16 +82,16 @@ def process_post(path, data):
         #   "temperature" : float,
         #   "lock" : [True|False]
         # }
-        if "MAC" in json_data:
-            r = dispatch_request("set_device",json_data)
-            if r is False:
-                return 404,{"result":False}
-            else:
-                return r.status_code,r.json()
+        r = dispatch_request("set_device",json_data)
+        if r is False:
+            return 404,{"result":False, "message":"Failed to query device", "MAC":mac, "human_name":human_name}
         else:
-            logging.error("No mac")
-            return 500, {"result":False, 
-              "message":"MAC address not supplied"}
+            message = r.json()
+            meta = {'message':"Set completed successfully.", 
+                       "results":True, "human_name":human_name}
+            reply = (**message, **meta) # Join to dicts in Python 3.5+.
+            return r.status_code,reply
+
     elif path == "/scan":
         # Not implemented
         return 202,{"result":True}
@@ -100,18 +106,21 @@ def dispatch_request(endpoint,message):
         try:
             r = requests.post(url, json=message)
             if r.status_code == 200:
-                logging.info("    Got successful reply from remote worker "+each+" for "+human_name)
+                logging.info("        Got successful reply from remote worker "+each+" for "+human_name)
+                if endpoint == "read_device":
+                    send_mqtt("trv/"+human_name, r.json())
                 return r
             else:
-                logging.info("    Didn't get a good reply from remote worker for "+human_name)
+                logging.info("        Didn't get a good reply from remote worker for "+human_name)
         except:
-            logging.info("    Failed to connect to remote worker: "+each)
-    logging.info("    Failed to get a result from any remote worker.")
+            logging.info("        Failed to connect to remote worker: "+each)
+    logging.info("        Failed to get a result from any remote worker.")
     return False
 
 def poll_all_trvs():
     good_list = []
     naughty_list = []
+    retry_list = [] # Using a new list because I'm lazy.  If this turns out to be useful, fix it.
     for mac in trv_lookup.keys():
         time.sleep(0.5) # Just to let bluepy helper settle
         human_name = trv_lookup[mac]
@@ -119,10 +128,12 @@ def poll_all_trvs():
         r = dispatch_request("read_device",{"MAC":mac})
         if r is False:
             naughty_list.append(human_name)
-            logging.debug("Failed to read device: "+human_name)
-            continue
+            retry_list.append(mac)
+            logging.info("    Failed to read device: "+human_name)
+            #continue
         elif r.status_code == 200:
-            send_mqtt("trv/"+human_name, r.json())
+            logging.info("    Correctly read device: %s" % human_name)
+            #send_mqtt("trv/"+human_name, r.json())
             good_list.append(human_name)
         else:
             logging.error("Something went wrong polling this device "+human_name)
@@ -133,6 +144,14 @@ def poll_all_trvs():
     logging.info("Naughty list:")
     for each in naughty_list:
         logging.info("    "+each)
+    logging.info("Retrying naughty list:")
+    for mac in retry_list:
+        logging.info("    Retrying: %s" % trv_lookup[mac])
+        r = dispatch_request("read_device",{"MAC":mac})
+        if r is False:
+            logging.info("  Failed again. :(")
+        elif r.status_code == 200:
+            logging.info("  Great success!")
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
