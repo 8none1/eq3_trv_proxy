@@ -7,6 +7,7 @@ import requests
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
+import datetime
 
 
 
@@ -178,10 +179,14 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
             time.sleep(10)
             if datetime.datetime.now().minute in [5, 15, 25, 35, 45, 55]:
                 poll_all_trvs()
+            else:
+                print("Not yet")
     except KeyboardInterrupt:
         x.join()
         httpd.server_close()
         logging.info('Stopping httpd...\n')
+    except:
+        raise
 
 if __name__ == '__main__':
     mqttc = mqtt.Client("trv_server")
