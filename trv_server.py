@@ -89,7 +89,7 @@ def process_post(path, data):
             message = r.json()
             meta = {'message':"Set completed successfully.", 
                        "results":True, "human_name":human_name}
-            reply = (**message, **meta) # Join to dicts in Python 3.5+.
+            reply = {**message, **meta} # Join to dicts in Python 3.5+.
             return r.status_code,reply
 
     elif path == "/scan":
