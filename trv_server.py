@@ -155,7 +155,7 @@ def poll_all_trvs():
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
-    logging.info("Sending MQTT message...")
+    logging.info("        Sending MQTT message...")
     logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
     try:
         mqttc.connect("calculon.whizzy.org", 1883)
