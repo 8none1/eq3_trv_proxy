@@ -174,9 +174,10 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
     x.start()
     try:
         while True:
-            poll_all_trvs()
-            logging.debug("Sleeping for 10 mins")
-            time.sleep(10*60)
+            logging.debug("Sleeping until next time")
+            time.sleep(10)
+            if datetime.datetime.now().minute in [5, 15, 25, 35, 45, 55]:
+                poll_all_trvs()
     except KeyboardInterrupt:
         x.join()
         httpd.server_close()
