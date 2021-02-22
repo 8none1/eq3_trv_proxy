@@ -23,7 +23,7 @@ trv_lookup = {
 "00:1A:22:0D:A3:6B" : "Study"
 }
 
-remote_workers = ["localhost", "pi-btle-relay-2", "thermopi"]
+remote_workers = ["localhost", "pi-btle-relay-2", "thermopi", "piwarmer"]
 
 #logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(level=logging.INFO)
