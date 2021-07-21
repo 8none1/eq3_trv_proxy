@@ -190,8 +190,8 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
 
 if __name__ == '__main__':
     mqttc = mqtt.Client("trv_server")
-    mqttc.connect("calculon.whizzy.org", 1883)
-    logging.info("Connected to MQTT broker")
+    #mqttc.connect("calculon.whizzy.org", 1883)
+    #logging.info("Connected to MQTT broker")
     from sys import argv
     if len(argv) == 2:
         run(port=int(argv[1]))
