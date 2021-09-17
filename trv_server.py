@@ -139,7 +139,7 @@ def poll_all_trvs():
             retry_list.append(mac)
             logging.info(f"Failed to communicate with device {human_name}. Added to retry list.")
         if r.status_code == 200:
-            logging.info("    Correctly read device: %s" % human_name)
+            logging.info("Correctly read device: %s" % human_name)
             #send_mqtt("trv/"+human_name, r.json())
             good_list.append(human_name)
 
