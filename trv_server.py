@@ -21,13 +21,14 @@ trv_lookup = {
 "00:1A:22:0C:2C:C8" : "Matty",
 "00:1A:22:0C:28:B3" : "Dining_Rm",
 "00:1A:22:0C:2C:BB" : "Sam",
-"00:1A:22:0D:A3:6B" : "Study"
+"00:1A:22:0D:A3:6B" : "Study",
+"00:1A:22:12:A2:0C" : "Hall"
 }
 
 remote_workers = ["localhost", "pi-btle-relay-2", "thermopi", "piwarmer"]
 
-#logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
 
 class S(BaseHTTPRequestHandler):
     sys_version = "0.00"
@@ -105,7 +106,7 @@ def dispatch_request(endpoint,message):
         human_name = trv_lookup[message['MAC']]
         logging.info("    Trying remote worker: "+each)
         try:
-            r = requests.post(url, json=message)
+            r = requests.post(url, json=message, timeout=90)
             if r.status_code == 200:
                 logging.info("        Got successful reply from remote worker "+each+" for "+human_name)
                 if endpoint == "read_device":
@@ -113,9 +114,14 @@ def dispatch_request(endpoint,message):
                 return r
             else:
                 logging.info("        Didn't get a good reply from remote worker for "+human_name)
-        except:
+        except requests.exceptions.ConnectTimeout:
             logging.info("        Failed to connect to remote worker: "+each)
-    logging.info("        Failed to get a result from any remote worker.")
+        except requests.exceptions.ReadTimeout:
+            logging.info("        Failed to read from remote worker: "+each)
+        except:
+            logging.info("        Failed trying to get remote worker to help us.")
+            raise
+    logging.info("        X Failed to get a result from any remote worker.")
     return False
 
 def poll_all_trvs():
@@ -123,7 +129,7 @@ def poll_all_trvs():
     naughty_list = []
     retry_list = [] # Using a new list because I'm lazy.  If this turns out to be useful, fix it.
     for mac in trv_lookup.keys():
-        time.sleep(0.5) # Just to let bluepy helper settle
+        #time.sleep(0.5) # Just to let bluepy helper settle
         human_name = trv_lookup[mac]
         logging.info("Starting read for MAC: "+mac+".  Name: "+human_name)
         r = dispatch_request("read_device",{"MAC":mac})
@@ -139,13 +145,7 @@ def poll_all_trvs():
         else:
             logging.error("Something went wrong polling this device "+human_name)
 
-    logging.info("Good list:")
-    for each in good_list:
-        logging.info("    "+each)
-    logging.info("Naughty list:")
-    for each in naughty_list:
-        logging.info("    "+each)
-    logging.info("Retrying naughty list:")
+    logging.info("Processing retry list:")
     for mac in retry_list:
         logging.info("    Retrying: %s" % trv_lookup[mac])
         r = dispatch_request("read_device",{"MAC":mac})
@@ -153,13 +153,21 @@ def poll_all_trvs():
             logging.info("  Failed again. :(")
         elif r.status_code == 200:
             logging.info("  Great success!")
+            naughty_list.remove(trv_lookup[mac])
+            good_list.append(trv_lookup[mac])
+    logging.info("Good list:")
+    for each in good_list:
+        logging.info("    "+each)
+    logging.info("Naughty list:")
+    for each in naughty_list:
+        logging.info("    "+each)
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
     logging.info("        Sending MQTT message...")
     logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
     try:
-        mqttc.connect("calculon.whizzy.org", 1883)
+        mqttc.connect("mqtt", 1883)
     except:
         logging.error("Couldnt connect to MQTT server?  WHY?!")
     mqttc.publish(topic,message)
@@ -167,7 +175,7 @@ def send_mqtt(topic,trv_obj):
     mqttc.disconnect()
 
 def run(server_class=HTTPServer, handler_class=S, port=8020):
-    logging.basicConfig(level=logging.INFO)
+    #logging.basicConfig(level=logging.DEBUG)
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     logging.info('Starting httpd.. on port '+str(port)+'.\n')
@@ -176,7 +184,8 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
     try:
         while True:
             logging.info("Sleeping until next time")
-            time.sleep(10)
+            time.sleep(30)
+            #poll_all_trvs()
             if datetime.datetime.now().minute in [5, 15, 25, 35, 45, 55]:
                 poll_all_trvs()
             else:
@@ -190,8 +199,8 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
 
 if __name__ == '__main__':
     mqttc = mqtt.Client("trv_server")
-    mqttc.connect("calculon.whizzy.org", 1883)
-    logging.info("Connected to MQTT broker")
+    #mqttc.connect("mqtt", 1883)
+    #logging.info("Connected to MQTT broker")
     from sys import argv
     if len(argv) == 2:
         run(port=int(argv[1]))
