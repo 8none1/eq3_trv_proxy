@@ -108,7 +108,7 @@ def dispatch_request(endpoint,message):
         try:
             r = requests.post(url, json=message, timeout=90)
             if r.status_code == 200:
-                logging.info(f"Got successful reply from remote worker {each} for device {human_name}"")
+                logging.info(f"Got successful reply from remote worker {each} for device {human_name}")
                 if endpoint == "read_device":
                     send_mqtt("trv/"+human_name, r.json())
                 return r
