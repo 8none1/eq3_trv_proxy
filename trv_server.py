@@ -158,7 +158,7 @@ def poll_all_trvs():
     logging.info("Naughty list:")
     for each in naughty_list:
         logging.info("    "+each)
-   logging.info("---------- Run completed. ----------")
+    logging.info("---------- Run completed. ----------")
 
 
 def send_mqtt(topic,trv_obj):
