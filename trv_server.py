@@ -104,24 +104,24 @@ def dispatch_request(endpoint,message):
     for each in remote_workers:
         url = "http://"+each+":8021/"+endpoint
         human_name = trv_lookup[message['MAC']]
-        logging.info("    Trying remote worker: "+each)
+        logging.info(f"Trying remote worker: {each} for device {human_name}. MAC: {message['MAC']})
         try:
             r = requests.post(url, json=message, timeout=90)
             if r.status_code == 200:
-                logging.info("        Got successful reply from remote worker "+each+" for "+human_name)
+                logging.info(f"Got successful reply from remote worker {each} for device {human_name}"")
                 if endpoint == "read_device":
                     send_mqtt("trv/"+human_name, r.json())
                 return r
             else:
-                logging.info("        Didn't get a good reply from remote worker for "+human_name)
+                logging.info("Didn't get a good reply from remote worker for "+human_name)
         except requests.exceptions.ConnectTimeout:
-            logging.info("        Failed to connect to remote worker: "+each)
+            logging.info("Connect timeout to remote worker: "+each)
         except requests.exceptions.ReadTimeout:
-            logging.info("        Failed to read from remote worker: "+each)
+            logging.info("Read timeout from remote worker: "+each)
         except:
-            logging.info("        Failed trying to get remote worker to help us.")
+            logging.info("Failed trying to get remote worker to help us.")
             raise
-    logging.info("        X Failed to get a result from any remote worker.")
+    logging.info("X Failed to get a result from any remote worker.")
     return False
 
 def poll_all_trvs():
@@ -136,23 +136,20 @@ def poll_all_trvs():
         if r is False:
             naughty_list.append(human_name)
             retry_list.append(mac)
-            logging.info("    Failed to read device: "+human_name)
-            #continue
-        elif r.status_code == 200:
+            logging.info(f"Failed to communicate with device {human_name}. Added to retry list.")
+        if r.status_code == 200:
             logging.info("    Correctly read device: %s" % human_name)
             #send_mqtt("trv/"+human_name, r.json())
             good_list.append(human_name)
-        else:
-            logging.error("Something went wrong polling this device "+human_name)
 
     logging.info("Processing retry list:")
     for mac in retry_list:
-        logging.info("    Retrying: %s" % trv_lookup[mac])
+        logging.info("Retrying: %s" % trv_lookup[mac])
         r = dispatch_request("read_device",{"MAC":mac})
         if r is False:
-            logging.info("  Failed again. :(")
-        elif r.status_code == 200:
-            logging.info("  Great success!")
+            logging.info("Failed again. :(")
+        if r.status_code == 200:
+            logging.info("Great success! Retry succeeded.")
             naughty_list.remove(trv_lookup[mac])
             good_list.append(trv_lookup[mac])
     logging.info("Good list:")
@@ -161,10 +158,12 @@ def poll_all_trvs():
     logging.info("Naughty list:")
     for each in naughty_list:
         logging.info("    "+each)
+   logging.info("---------- Run completed. ----------")
+
 
 def send_mqtt(topic,trv_obj):
     message = json.dumps(trv_obj)
-    logging.info("        Sending MQTT message...")
+    logging.info("Sending MQTT message...")
     logging.debug(json.dumps(trv_obj, indent=4, sort_keys=True))
     try:
         mqttc.connect("mqtt", 1883)
