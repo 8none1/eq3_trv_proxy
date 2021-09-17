@@ -104,7 +104,7 @@ def dispatch_request(endpoint,message):
     for each in remote_workers:
         url = "http://"+each+":8021/"+endpoint
         human_name = trv_lookup[message['MAC']]
-        logging.info(f"Trying remote worker: {each} for device {human_name}. MAC: {message['MAC']})
+        logging.info(f"Trying remote worker: {each} for device {human_name}. MAC: {message['MAC']}")
         try:
             r = requests.post(url, json=message, timeout=90)
             if r.status_code == 200:
