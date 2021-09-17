@@ -8,6 +8,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import datetime
+import sys
 
 
 
@@ -188,11 +189,12 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
             if datetime.datetime.now().minute in [5, 15, 25, 35, 45, 55]:
                 poll_all_trvs()
             else:
-                print("Not yet")
+                logging.debug("Not yet.")
     except KeyboardInterrupt:
+        logging.info('Stopping httpd...\n')
         x.join()
         httpd.server_close()
-        logging.info('Stopping httpd...\n')
+        sys.exit(1)
     except:
         raise
 
