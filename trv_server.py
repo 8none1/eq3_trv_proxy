@@ -138,10 +138,12 @@ def poll_all_trvs():
             naughty_list.append(human_name)
             retry_list.append(mac)
             logging.info(f"Failed to communicate with device {human_name}. Added to retry list.")
-        if r is not False and r.status_code == 200:
+        elif r.status_code == 200:
             logging.info("Correctly read device: %s" % human_name)
             #send_mqtt("trv/"+human_name, r.json())
             good_list.append(human_name)
+        else:
+            print("Dont know.  Something bad.")
 
     logging.info("Processing retry list:")
     for mac in retry_list:
