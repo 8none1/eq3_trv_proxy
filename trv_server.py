@@ -119,6 +119,8 @@ def dispatch_request(endpoint,message):
             logging.info("Connect timeout to remote worker: "+each)
         except requests.exceptions.ReadTimeout:
             logging.info("Read timeout from remote worker: "+each)
+        except requests.exceptions.ConnectionError:
+            logging.info("Failed to connect to remote work: "+each)
         except:
             logging.info("Failed trying to get remote worker to help us.")
             raise
