@@ -151,12 +151,14 @@ def poll_all_trvs():
     for mac in retry_list:
         logging.info("Retrying: %s" % trv_lookup[mac])
         r = dispatch_request("read_device",{"MAC":mac})
-        if r is False:
-            logging.info("Failed again. :(")
-        if r.status_code == 200:
-            logging.info("Great success! Retry succeeded.")
-            naughty_list.remove(trv_lookup[mac])
-            good_list.append(trv_lookup[mac])
+        if type(r) is bool:
+            if r is False:
+                logging.info("Failed again. :(")
+        if type(r) is not bool:
+            if r.status_code == 200:
+                logging.info("Great success! Retry succeeded.")
+                naughty_list.remove(trv_lookup[mac])
+                good_list.append(trv_lookup[mac])
     logging.info("Good list:")
     for each in good_list:
         logging.info("    "+each)
@@ -183,7 +185,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     logging.info('Starting httpd.. on port '+str(port)+'.\n')
-    x = threading.Thread(target=httpd.serve_forever)
+    x = threading.Thread(target=httpd.serve_forever, daemon=True)
     x.start()
     try:
         while True:
