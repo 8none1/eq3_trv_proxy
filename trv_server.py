@@ -198,8 +198,6 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
                 logging.debug("Not yet.")
     except KeyboardInterrupt:
         logging.info('Stopping httpd...\n')
-        #x.join()
-        print("Joined")
         httpd.server_close()
         print("Closed server")
         sys.exit(1)
