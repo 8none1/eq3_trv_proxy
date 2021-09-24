@@ -189,7 +189,7 @@ def run(server_class=HTTPServer, handler_class=S, port=8020):
     x.start()
     try:
         while True:
-            logging.info("Sleeping until run time")
+            #logging.info("Sleeping until run time")
             time.sleep(30)
             #poll_all_trvs()
             if datetime.datetime.now().minute in [5, 15, 25, 35, 45, 55]:
