@@ -117,8 +117,8 @@ def read_device(mac):
         obj["holiday"] = True if "holiday" in mode else False
         obj["boost"] = True if "boost" in mode else False
         obj["window"] = True if "window" in mode else False
-        obj["mode"] = "manual" if "manual" in mode
-        obj["mode"] = "auto" if "auto" in mode
+        if "manual" in mode then obj["mode"] = "manual"
+        if "auto" in mode then obj["mode"] = "auto"
 
         logging.info(json.dumps(obj))
         return obj
