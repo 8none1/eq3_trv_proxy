@@ -107,6 +107,10 @@ def read_device(mac):
     try:
         thermo.update()
         # thermo.query_id() # I don't think we actually do anything with this
+        try:
+            print(f"Mode: {thermo.mode_readable}")
+        except:
+            print("Nope")
         obj = {
             "mac": mac,
             "valve" : thermo.valve_state,
