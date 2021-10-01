@@ -106,11 +106,6 @@ def read_device(mac):
     thermo = eq3bt.Thermostat(mac)
     try:
         thermo.update()
-        # thermo.query_id() # I don't think we actually do anything with this
-        try:
-            print(f"Mode: {thermo.mode_readable}")
-        except:
-            print("Nope")
         obj = {
             "mac": mac,
             "valve" : thermo.valve_state,
@@ -118,6 +113,13 @@ def read_device(mac):
             "low_battery" : thermo.low_battery,
             "locked" : thermo.locked
         }
+        mode = thermo.mode_readable
+        obj["holiday"] = True if "holiday" in mode else False
+        obj["boost"] = True if "boost" in mode else False
+        obj["window"] = True if "window" in mode else False
+        obj["mode"] = "manual" if "manual" in mode
+        obj["mode"] = "auto" if "auto" in mode
+
         logging.info(json.dumps(obj))
         return obj
     except bluepy.btle.BTLEDisconnectError:
